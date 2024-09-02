@@ -15,7 +15,7 @@
 </br>
 
 ## 🎯 현재 스터디원
-- **박혜원** ([@HeewonP825](https://github.com/HeewonP825))
+- **박희원** ([@HeewonP825](https://github.com/HeewonP825))
 - **이유호** ([@YuhoLee](https://github.com/YuhoLee))
 
 </br>

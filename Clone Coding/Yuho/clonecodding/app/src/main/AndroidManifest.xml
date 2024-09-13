@@ -15,7 +15,7 @@
         android:theme="@style/Theme.Clonecodding"
         tools:targetApi="31">
         <activity
-            android:name=".tinder.TinderActivity"
+            android:name=".calendar.CalendarActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.Clonecodding">

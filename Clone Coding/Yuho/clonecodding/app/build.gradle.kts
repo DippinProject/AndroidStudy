@@ -74,6 +74,7 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
+
     // Compose
     implementation(libs.toolbar.compose)
     implementation(libs.androidx.navigation)

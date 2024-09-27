@@ -54,11 +54,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.project.clonecoding.presentation.calendar.item.DateItem
-import com.project.clonecoding.presentation.calendar.item.EventCategory
-import com.project.clonecoding.presentation.calendar.item.EventItem
+import com.project.clonecoding.domain.model.CalendarEventCategory
+import com.project.clonecoding.domain.model.CalendarEventModel
+import com.project.clonecoding.domain.model.CalendarEventsOfDateModel
 import com.project.clonecoding.presentation.R
 import com.project.clonecoding.presentation.theme.ClonecoddingTheme
 import com.project.clonecoding.presentation.theme.White
@@ -68,7 +69,7 @@ import java.util.Locale
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun CalendarScreen(calendarViewModel: CalendarViewModel = viewModel()) {
+fun CalendarScreen(calendarViewModel: CalendarViewModel = hiltViewModel()) {
     ClonecoddingTheme {
         Scaffold(
             bottomBar = {
@@ -122,7 +123,7 @@ fun CalendarScreenPreview() {
 
 @Composable
 private fun CalendarBody(
-    viewModel: CalendarViewModel = viewModel(),
+    viewModel: CalendarViewModel = hiltViewModel(),
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
@@ -165,7 +166,7 @@ private fun CalendarBody(
 
         CalendarScheduleList(
             modifier = Modifier.weight(1f),
-            eventList = selectedItem?.eventList ?: listOf()
+            eventList = selectedItem?.events ?: listOf()
         )
     }
 }
@@ -249,8 +250,8 @@ private fun CalendarDateController(
 
 @Composable
 private fun CalendarContent(
-    dayItems: List<DateItem>,
-    selectedItem: DateItem?,
+    dayItems: List<CalendarEventsOfDateModel>,
+    selectedItem: CalendarEventsOfDateModel?,
     modifier: Modifier = Modifier,
     onSelectedDayChanged: (Int) -> Unit
 ) {
@@ -332,12 +333,14 @@ private fun CalendarContent(
                             .height(5.dp),
                         horizontalArrangement = Arrangement.Center
                     ) {
-                        val viewCategoryList = mutableListOf<EventCategory>()
-                        item.eventList.forEach {
+                        val viewCategoryList = mutableListOf<CalendarEventCategory>()
+                        item.events.forEach {
                             when (it.category) {
-                                is EventCategory.Design -> viewCategoryList.add(EventCategory.Design)
-                                is EventCategory.Workout -> viewCategoryList.add(EventCategory.Workout)
-                                is EventCategory.Brainstorm -> viewCategoryList.add(EventCategory.Brainstorm)
+                                CalendarEventCategory.Design -> viewCategoryList.add( CalendarEventCategory.Design)
+                                CalendarEventCategory.Workout -> viewCategoryList.add(CalendarEventCategory.Workout)
+                                CalendarEventCategory.Brainstorm -> viewCategoryList.add(
+                                    CalendarEventCategory.Brainstorm
+                                )
                             }
                         }
                         viewCategoryList.forEach {
@@ -346,7 +349,7 @@ private fun CalendarContent(
                                     .padding(horizontal = 1.dp)
                                     .size(5.dp)
                                     .clip(CircleShape)
-                                    .background(it.color)
+                                    .background(Color(it.colorHex))
                             ) {
                                 Box(
                                     modifier = Modifier
@@ -366,7 +369,10 @@ private fun CalendarContent(
 }
 
 @Composable
-private fun CalendarScheduleList(modifier: Modifier = Modifier, eventList: List<EventItem>) {
+private fun CalendarScheduleList(
+    modifier: Modifier = Modifier,
+    eventList: List<CalendarEventModel>
+) {
     Column(modifier = modifier) {
         Row(
             modifier = Modifier
@@ -403,7 +409,7 @@ private fun CalendarScheduleList(modifier: Modifier = Modifier, eventList: List<
 
 
 @Composable
-private fun CalendarScheduleItem(item: EventItem, modifier: Modifier = Modifier) {
+private fun CalendarScheduleItem(item: CalendarEventModel, modifier: Modifier = Modifier) {
     Column(modifier = modifier.padding(vertical = 16.dp, horizontal = 14.dp)) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -415,7 +421,7 @@ private fun CalendarScheduleItem(item: EventItem, modifier: Modifier = Modifier)
                     modifier = Modifier
                         .size(10.dp)
                         .clip(CircleShape)
-                        .background(item.category.color)
+                        .background(Color(item.category.colorHex))
                 ) {
                     Box(
                         modifier = Modifier

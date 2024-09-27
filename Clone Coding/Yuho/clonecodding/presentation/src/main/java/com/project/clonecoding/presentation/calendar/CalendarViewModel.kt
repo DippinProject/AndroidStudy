@@ -1,16 +1,34 @@
 package com.project.clonecoding.presentation.calendar
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
-import com.project.clonecoding.presentation.calendar.item.DateItem
+import androidx.lifecycle.viewModelScope
+import com.project.clonecoding.common.DataState
+import com.project.clonecoding.domain.usecase.AddCalendarEventUseCase
+import com.project.clonecoding.domain.usecase.GetDateMatchedEventsUseCase
+import com.project.clonecoding.domain.usecase.GetYearMonthMatchedEventsUseCase
+import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import java.time.LocalDate
+import javax.inject.Inject
 
-class CalendarViewModel : ViewModel() {
+@HiltViewModel
+class CalendarViewModel @Inject constructor(
+    @ApplicationContext private val context: Context,
+    private val addCalendarEventUseCase: AddCalendarEventUseCase,
+    private val getDateMatchedEventsUseCase: GetDateMatchedEventsUseCase,
+    private val getYearMonthMatchedEventsUseCase: GetYearMonthMatchedEventsUseCase,
+) : ViewModel() {
 
     private val _state: MutableStateFlow<CalendarState> = MutableStateFlow(CalendarState())
     val state get() = _state.asStateFlow()
 
+    init {
+        getMatchedMonthDays(_state.value.todayLocalDate)
+    }
 
     fun onEvent(event: CalendarEvent) {
         when (event) {
@@ -21,22 +39,7 @@ class CalendarViewModel : ViewModel() {
                     _state.value.currDay
                 ).minusMonths(1)
 
-                val dayItems = (1..currLocalDate.lengthOfMonth()).map {
-                    DateItem(
-                        day = it,
-                        isCurrDay = true,
-                        eventList = listOf(),
-                    )
-                }.toMutableList().apply {
-                    addExtraDays(list = this, currLocalDate = currLocalDate)
-                }
-
-                _state.value = _state.value.copy(
-                    currYear = currLocalDate.year,
-                    currMonth = currLocalDate.monthValue,
-                    currDay = currLocalDate.dayOfMonth,
-                    calendarDayList = dayItems
-                )
+                getMatchedMonthDays(date = currLocalDate)
             }
 
             is CalendarEvent.OnNextMonth -> {
@@ -46,22 +49,7 @@ class CalendarViewModel : ViewModel() {
                     _state.value.currDay
                 ).plusMonths(1)
 
-                val dayItems = (1..currLocalDate.lengthOfMonth()).map {
-                    DateItem(
-                        day = it,
-                        isCurrDay = true,
-                        eventList = listOf(),
-                    )
-                }.toMutableList().apply {
-                    addExtraDays(list = this, currLocalDate = currLocalDate)
-                }
-
-                _state.value = _state.value.copy(
-                    currYear = currLocalDate.year,
-                    currMonth = currLocalDate.monthValue,
-                    currDay = currLocalDate.dayOfMonth,
-                    calendarDayList = dayItems
-                )
+                getMatchedMonthDays(date = currLocalDate)
             }
 
             is CalendarEvent.OnDayChanged -> {
@@ -72,46 +60,37 @@ class CalendarViewModel : ViewModel() {
         }
     }
 
-    private fun getPrevMonthData(){
 
-    }
+    /**
+     * 현재 date에 맞는 Calendar 관련 정보들을 가져온다.
+     * @param date
+     *
+     */
+    private fun getMatchedMonthDays(date: LocalDate) {
+        viewModelScope.launch {
+            getYearMonthMatchedEventsUseCase(date).collect{ result ->
+                when (result) {
+                    is DataState.Loading -> {
+                        _state.value = _state.value.copy(isLoading = result.isLoading)
+                    }
 
+                    is DataState.Success -> {
+                        result.data?.let { items ->
+                            _state.value = _state.value.copy(
+                                currYear = date.year,
+                                currMonth = date.monthValue,
+                                currDay = date.dayOfMonth,
+                                calendarDayList = items
+                            )
+                        }
+                    }
 
+                    is DataState.Error -> {
+                        _state.value = _state.value.copy(isLoading = false)
+                    }
+                }
 
-    private fun addExtraDays(list: MutableList<DateItem>, currLocalDate: LocalDate) {
-        val prevLocalDate = currLocalDate.minusMonths(1)
-        val startDayOfWeek =
-            LocalDate.of(currLocalDate.year, currLocalDate.month, 1).dayOfWeek.value
-        val endDayOfWeek =
-            LocalDate.of(
-                currLocalDate.year,
-                currLocalDate.month,
-                currLocalDate.lengthOfMonth()
-            ).dayOfWeek.value
-        val prevMonthDaysCount = startDayOfWeek - 1
-        val nextMonthDaysCount = 7 - endDayOfWeek
-
-        // 이전달 일자 표기용
-        (0 until prevMonthDaysCount).forEach { minusCount ->
-            list.add(
-                0, DateItem(
-                    day = prevLocalDate.month.maxLength() - minusCount,
-                    isCurrDay = false,
-                    eventList = listOf(),
-                )
-            )
-
-        }
-
-        // 다음달 일자 표기용
-        (1..nextMonthDaysCount).forEach { day ->
-            list.add(
-                DateItem(
-                    day = day,
-                    isCurrDay = false,
-                    eventList = listOf(),
-                )
-            )
+            }
         }
     }
 

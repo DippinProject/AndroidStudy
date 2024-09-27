@@ -29,7 +29,10 @@ import com.project.clonecoding.presentation.R
 import com.project.clonecoding.presentation.theme.Black
 import com.project.clonecoding.presentation.theme.ClonecoddingTheme
 import com.project.clonecoding.presentation.theme.White
+import dagger.hilt.android.AndroidEntryPoint
 
+
+@AndroidEntryPoint
 class CalendarActivity: ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

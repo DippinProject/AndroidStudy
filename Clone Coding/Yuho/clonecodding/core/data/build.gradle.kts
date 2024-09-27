@@ -35,9 +35,17 @@ android {
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_17.toString()
     }
+    kapt {
+        correctErrorTypes = true
+    }
+
+    hilt{
+        enableAggregatingTask = false
+    }
 }
 
 dependencies {
+    implementation(project(":core:common"))
     implementation(project(":core:domain"))
 
     implementation(libs.androidx.core.ktx)
@@ -62,4 +70,8 @@ dependencies {
     // sandwich
     implementation(libs.sandwich)
     implementation(libs.sandwich.retrofit)
+
+    // Room
+    implementation(libs.room)
+    kapt(libs.room.compiler)
 }

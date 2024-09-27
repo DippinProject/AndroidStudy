@@ -21,4 +21,6 @@ dependencyResolutionManagement {
 
 rootProject.name = "clonecodding"
 include(":app")
-include(":tinder")
+include(":presentation")
+include(":core:data")
+include(":core:domain")

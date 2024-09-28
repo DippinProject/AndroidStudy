@@ -1,5 +1,6 @@
 package com.project.clonecoding.data.repository
 
+import android.util.Log
 import com.project.clonecoding.common.DataState
 import com.project.clonecoding.data.local.db.CalendarDatabase
 import com.project.clonecoding.data.local.entity.CalendarEventEntity
@@ -33,7 +34,6 @@ class CalendarRepositoryImpl @Inject constructor(
                         day = day,
                         title = model.title,
                         note = model.note,
-                        date = model.date,
                         startTime = model.startTime,
                         endTime = model.endTime,
                         isRemind = model.isRemind,

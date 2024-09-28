@@ -7,7 +7,6 @@ import com.project.clonecoding.domain.model.CalendarEventModel
 fun CalendarEventEntity.toCalendarEventModel() = CalendarEventModel(
     title = title,
     note = note,
-    date = date,
     startTime = startTime,
     endTime = endTime,
     isRemind = isRemind,

@@ -12,11 +12,10 @@ data class CalendarEventEntity(
     val day: Int,
     val title: String,
     val note: String,
-    val date: String,
     val startTime: String,
     val endTime: String,
     val isRemind: Boolean,
-    val category: CalendarEventCategory
+    val category: CalendarEventCategory?
 ){
     @PrimaryKey(autoGenerate = true) var id: Int? = null
 }

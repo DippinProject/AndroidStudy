@@ -8,7 +8,6 @@ import com.project.clonecoding.data.local.entity.CalendarEventEntity
 
 @Dao
 interface CalendarDao {
-
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(entity: CalendarEventEntity): Long
 

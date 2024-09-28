@@ -15,8 +15,10 @@ import javax.inject.Singleton
 object UseCaseModule {
     @Provides
     @Singleton
-    fun provideAddCalendarEventUseCase(calendarRepository: CalendarRepository) =
-        AddCalendarEventUseCase(calendarRepository)
+    fun provideAddCalendarEventUseCase(
+        calendarRepository: CalendarRepository,
+        getDateMatchedEventsUseCase: GetDateMatchedEventsUseCase
+    ) = AddCalendarEventUseCase(calendarRepository, getDateMatchedEventsUseCase)
 
     @Provides
     @Singleton

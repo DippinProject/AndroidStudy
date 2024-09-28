@@ -1,5 +1,6 @@
 package com.project.clonecoding.domain.usecase
 
+import android.util.Log
 import com.project.clonecoding.common.DataState
 import com.project.clonecoding.domain.model.CalendarEventsOfDateModel
 import com.project.clonecoding.domain.repository.CalendarRepository
@@ -28,21 +29,11 @@ class GetYearMonthMatchedEventsUseCase @Inject constructor(
                         addExtraDays(date)
                     }
 
-                    // 이벤트가 있는 일자에 한해서, modifiedData에 업데이트해준다.
-                    val dataStateMap =
-                        dataState.data?.associateBy { Triple(it.year, it.month, it.day) }
-
-                    modifiedData.map { modifiedModel ->
-                        dataStateMap?.get(
-                            Triple(
-                                modifiedModel.year,
-                                modifiedModel.month,
-                                modifiedModel.day
-                            )
-                        )
-                            ?.let { dataStateModel ->
-                                modifiedModel.copy(events = dataStateModel.events)
-                            }
+                    dataState.data?.forEach { dsModel ->
+                        val findRes = modifiedData.find { it.year == dsModel.year && it.month == dsModel.month && it.day == dsModel.day }
+                        if(findRes != null){
+                            findRes.events = dsModel.events
+                        }
                     }
 
                     DataState.Success(modifiedData)

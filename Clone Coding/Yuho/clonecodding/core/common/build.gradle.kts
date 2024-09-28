@@ -1,12 +1,10 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.jetbrains.kotlin.android)
-    alias(libs.plugins.dagger.hilt.android)
-    id(libs.plugins.jetbrains.kotlin.kapt.get().pluginId)
 }
 
 android {
-    namespace = "com.project.clonecoding.domain"
+    namespace = "com.project.clonecoding.common"
     compileSdk = 34
 
     defaultConfig {
@@ -26,23 +24,15 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
     }
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_17.toString()
-    }
-    kapt {
-        correctErrorTypes = true
-    }
-
-    hilt{
-        enableAggregatingTask = false
+        jvmTarget = "1.8"
     }
 }
 
 dependencies {
-    implementation(project(":core:common"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
@@ -50,7 +40,4 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-
-    implementation(libs.hilt.android)
-    kapt(libs.hilt.android.compiler)
 }
